@@ -1,5 +1,6 @@
 package com.example.timer_kt
 
+import android.media.SoundPool
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -8,7 +9,7 @@ import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
-    private val seekBar : SeekBar by lazy { findViewById(R.id.seekBar)}
+    private val seekBar: SeekBar by lazy { findViewById(R.id.seekBar) }
     private val remainMinutesTextView: TextView by lazy { findViewById(R.id.remainMinutesTextView) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,35 +17,35 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
     }
 
-    private fun bindViews(){
+    private fun bindViews() {
         seekBar.setOnClickListener(
-                 object : SeekBar.OnSeekBarChangeListener{
+                object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                         if (fromUser) {
                             //프로그레스바를 조정하고 있으면 초를 -으로 맞춰주기 위해 추가 (텍스트뷰 갱신)
-                            updateRemainTimes(proress*60*1000L)
+                            updateRemainTimes(proress * 60 * 1000L)
                         }
                     }
 
-                     override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                    override fun onStartTrackingTouch(seekBar: SeekBar?) {
                         // 조정하기 시작하면 기존 타이머가 있을 때 cancel 후 null
-                         stopCountDown()
-                     }
+                        stopCountDown()
+                    }
 
-                     override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                         seekBar ?: return
+                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                        seekBar ?: return
 
-                         if (seekBar.progress == 0) {
-                             stopCountDown()
-                         } else {
-                             startCountDown()
-                         }
-                     }
-                 }
+                        if (seekBar.progress == 0) {
+                            stopCountDown()
+                        } else {
+                            startCountDown()
+                        }
+                    }
+                }
         )
     }
 
-    private fun updateRemainTimes(remainMills:Long) {
+    private fun updateRemainTimes(remainMills: Long) {
         val remainSeconds = remainMills / 1000
 
         remainMinutesTextView.text = "%02d".format(remainSeconds / 60)
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startCountDown() {
         // 사용자가 바에서 손을 떼는 순간 새로운 타이머 생성
-        currentCountDownTimer = createCountDownTimer(seekBar.progress*60*1000L)
+        currentCountDownTimer = createCountDownTimer(seekBar.progress * 60 * 1000L)
         currentCountDownTimer?.start()
 
         // 소리 재생
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createCountDownTimer(initialMillis: Long): CountDownTimer =
-            object  : CountDownTimer(initialMillis, 1000L) {
+            object : CountDownTimer(initialMillis, 1000L) {
                 override fun onTick(millisUntilFinished: Long) {
                     updateRemainTimes(millisUntilFinished)
                     updateSeekBar(millisUntilFinished)
@@ -94,5 +95,19 @@ class MainActivity : AppCompatActivity() {
         currentCountDownTimer?.cancel()
         currentCountDownTimer = null
         soundPoll.autoPause()
+    }
+
+    private val soundPool = SoundPool.Builder().build()
+
+    private fun initSounds() {
+        // sound 로드
+        tickingSoundld = soundPool.load(this, R.raw.timer_ticking, 1)
+        bellSoundld = soundPool.load(this, R.raw.timer_bell, 1)
+
+        tickingSoundld?.let { soundld ->
+            soundPool.play(soundld, 1F, 1F, 0, -1, 1F)
+        }
+
+        soundPool.autoPause()
     }
 }
