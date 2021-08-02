@@ -108,8 +108,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun startCountDown() {
         // 사용자가 바에서 손을 떼는 순간 새로운 타이머 생성
         currentCountDownTimer = createCountDownTimer(seekBar.progress * 60 * 1000L)
