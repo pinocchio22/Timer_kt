@@ -110,4 +110,22 @@ class MainActivity : AppCompatActivity() {
 
         soundPool.autoPause()
     }
+
+    override fun onResume() {
+        super.onResume()
+        // 앱이 다시 시작되는 경우
+        soundPool.autoResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // 앱이 화면에 보이지 않을 경우
+        // soundPool.pause() // 특정 스트림 아이디로 정지
+        soundPool.autoPause() // 모든 활성 스트림 정지
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        soundPool.release() // 더이상 필요 없으면 사운드풀 메모리에서 해제
+    }
 }
